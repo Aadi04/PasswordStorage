@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--<?import com.gluonhq.charm.glisten.control.TextField?>-->
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javaFiles.controllers.DashboardController">
+   <children>
+      <HBox layoutX="282.0" prefHeight="605.0" prefWidth="727.0">
+         <children>
+            <TableView prefHeight="605.0" prefWidth="756.0" style="-fx-background-color: #1f405c;">
+              <columns>
+                <TableColumn prefWidth="162.66665649414062" resizable="false" sortable="false" text="Website" />
+                <TableColumn minWidth="4.33331298828125" prefWidth="173.33334350585938" resizable="false" sortable="false" text="Username" />
+                  <TableColumn prefWidth="175.33331298828125" resizable="false" sortable="false" text="Password" />
+                  <TableColumn prefWidth="214.0" text="Notes" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+      </HBox>
+      <VBox layoutX="-3.0" layoutY="-2.0" prefHeight="607.0" prefWidth="285.0" style="-fx-background-color: #3a71a1;">
+         <children>
+            <AnchorPane prefHeight="623.0" prefWidth="285.0">
+               <children>
+                  <Text fill="WHITE" layoutX="19.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ADD TO YOUR STORAGE!" textAlignment="CENTER" wrappingWidth="255.08333206176758">
+                     <font>
+                        <Font name="Tahoma" size="22.0" />
+                     </font>
+                  </Text>
+                  <JFXTextField fx:id="websiteTextField" alignment="CENTER" layoutX="57.0" layoutY="132.0" prefHeight="37.0" prefWidth="172.0" promptText="Website" unFocusColor="WHITE">
+                     <font>
+                        <Font name="Tahoma" size="15.0" />
+                     </font>
+                     <focusColor>
+                        <LinearGradient endX="1.0" endY="1.0">
+                           <stops>
+                              <Stop color="#49adff" />
+                              <Stop color="#153d68" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </focusColor>
+                  </JFXTextField>
+               </children>
+            </AnchorPane>
+         </children></VBox>
+   </children>
+</AnchorPane>

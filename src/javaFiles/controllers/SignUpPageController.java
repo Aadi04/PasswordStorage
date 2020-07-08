@@ -114,12 +114,7 @@ public class SignUpPageController
 
     private boolean isPassLongEnough()
     {
-        if(getPassFieldText().length() < PASSWORD_LENGTH)
-        {
-            return false;
-        }
-        else
-            return true;
+        return getPassFieldText().length() >= PASSWORD_LENGTH;
     }
 
     private void storeDataIntoDatabase(String username, String password) throws SQLException, NoSuchAlgorithmException
@@ -127,8 +122,7 @@ public class SignUpPageController
         boolean flag = false;
 
         Connection con = DbConnection.connection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        PreparedStatement ps;
 
         byte[] salt = getSalt();
         String hash = encryptThePassword(password, salt);
@@ -161,7 +155,7 @@ public class SignUpPageController
     private void makeANewTable(String tableName) throws SQLException
     {
         Connection conn = DbConnection.connection();
-        PreparedStatement ps = conn.prepareStatement("CREATE TABLE " + tableName + " (Username TEXT, Password TEXT, Salt TEXT)");
+        PreparedStatement ps = conn.prepareStatement("CREATE TABLE " + tableName + " (Website TEXT, Username TEXT, Password TEXT,Notes TEXT)");
 
         ps.execute();
 
@@ -281,7 +275,7 @@ public class SignUpPageController
 
 
     //If Enter key is pressed then do the same thing as clicking the signUp button
-    public void onEnterKey(KeyEvent keyEvent) throws SQLException, NoSuchAlgorithmException
+    public void onEnterKey(KeyEvent keyEvent)
     {
 
 //        if(keyEvent.getCode() == KeyCode.ENTER)

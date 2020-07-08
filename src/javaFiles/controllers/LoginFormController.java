@@ -1,5 +1,6 @@
 package javaFiles.controllers;
 
+import javaFiles.Main;
 import javaFiles.controllers.SignUpPageController;
 import javaFiles.util.Alerts;
 import javaFiles.util.DbConnection;
@@ -25,14 +26,21 @@ public class LoginFormController {
     @FXML
     private TextField usernameField;
 
+    static String currentUser = null;
+
     SignUpPageController signUpPageController = new SignUpPageController();
+    Main main = new Main();
     DashboardController dashboardController = new DashboardController();
+
+//    public LoginFormController()
+//    {
+//        dashboardController = new DashboardController(this);
+//    }
 
     public void signInMouseClicked(MouseEvent mouseEvent) throws SQLException, NoSuchAlgorithmException, IOException
     {
-        //showAlerts(usernameField.getText(), passwordField.getText());
-        dashboardController.showDashboardWindow();
-
+        setCurrentUser(usernameField.getText());
+        showAlerts(usernameField.getText(), passwordField.getText());
     }
 
     public void onEnterKey(KeyEvent keyEvent)
@@ -42,6 +50,8 @@ public class LoginFormController {
 
     private boolean doesUserNameExistInDatabase(String username) throws SQLException
     {
+        String holder = null;
+        boolean flag = false;
         Connection con = DbConnection.connection();
 
         PreparedStatement ps = con.prepareStatement("SELECT * FROM loginData WHERE Username = ?");
@@ -52,9 +62,8 @@ public class LoginFormController {
 
         if(rs.next())
         {
-            return true;
+          return true;
         }
-
         return false;
     }
 
@@ -115,7 +124,7 @@ public class LoginFormController {
         return false;
     }
 
-    private boolean showAlerts (String username, String pass) throws SQLException, NoSuchAlgorithmException
+    private boolean showAlerts (String username, String pass) throws SQLException, NoSuchAlgorithmException, IOException
     {
         if(username.isEmpty() || pass.isEmpty())
         {
@@ -138,6 +147,8 @@ public class LoginFormController {
         else
         {
             Alerts.displayConfirmationAlert("You are in!", "You are in!");
+            main.getMainStage().close();
+            dashboardController.showDashboardWindow();
             return true;
         }
     }
@@ -146,4 +157,16 @@ public class LoginFormController {
     {
         signUpPageController.showSignUpWindow();
     }
+
+    public void setCurrentUser(String username)
+    {
+        currentUser = username;
+    }
+
+    public static String getCurrentUser()
+    {
+        return currentUser;
+    }
+
+
 }

@@ -1,10 +1,8 @@
 package javaFiles.controllers;
 
-import com.jfoenix.controls.JFXTextField;
 import javaFiles.util.DbConnection;
 import javaFiles.util.UserData;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -17,24 +15,30 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable
 {
+
     private String currentUser = LoginFormController.getCurrentUser();
+
+    private DataEditorController dataEditorController;
+
+
     private String tableToOpen = currentUser + "_database";
 
     private static Stage stage = new Stage();
 
-    private LoginFormController loginFormController;
+    static String selectedWebsite = null;
+    static String selectedUsername = null;
+    static String selectedPassword= null;
+    static String selectedNotes = null;
 
     @FXML
     private TextField website;
@@ -63,6 +67,10 @@ public class DashboardController implements Initializable
 
     private DbConnection dbConnection;
 
+    public DashboardController()
+    {
+        this.dataEditorController = new DataEditorController(this);
+    }
     public void showDashboardWindow() throws IOException
     {
         Parent root = FXMLLoader.load(getClass().getResource("/resources/fxml/dashboard.fxml"));
@@ -87,6 +95,7 @@ public class DashboardController implements Initializable
         try
         {
             notes.setWrapText(true);
+            doubleClickChecker();
             loadData();
         }
         catch (SQLException throwables)
@@ -155,5 +164,70 @@ public class DashboardController implements Initializable
         clearTextField();
     }
 
+    private void doubleClickChecker()
+    {
+        dataTableview.setOnMousePressed(new EventHandler<MouseEvent>()
+        {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.isPrimaryButtonDown() && event.getClickCount() == 2 && dataTableview.getSelectionModel().getSelectedItem() != null)
+                {
+                    setSelectedWebsite(dataTableview.getSelectionModel().getSelectedItem().getWebsite());
+                    setSelectedUsername(dataTableview.getSelectionModel().getSelectedItem().getUsername());
+                    setSelectedPassword(dataTableview.getSelectionModel().getSelectedItem().getPassword());
+                    setSelectedNotes(dataTableview.getSelectionModel().getSelectedItem().getNotes());
+
+                    try
+                    {
+                        dataEditorController.showDataEditorWindow();
+                        dataTableview.getSelectionModel().clearSelection();
+                    }
+                    catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    public static String getSelectedWebsite()
+    {
+        return selectedWebsite;
+    }
+
+    public void setSelectedWebsite(String selectedWebsite)
+    {
+        this.selectedWebsite = selectedWebsite;
+    }
+
+    public static String getSelectedUsername()
+    {
+        return selectedUsername;
+    }
+
+    public void setSelectedUsername(String username)
+    {
+        selectedUsername = username;
+    }
+
+    public static String getSelectedPassword()
+    {
+        return selectedPassword;
+    }
+
+    public void setSelectedPassword(String selectedPassword)
+    {
+        DashboardController.selectedPassword = selectedPassword;
+    }
+
+    public static String getSelectedNotes() {
+        return selectedNotes;
+    }
+
+    public void setSelectedNotes(String selectedNotes)
+    {
+        DashboardController.selectedNotes = selectedNotes;
+    }
 }
 

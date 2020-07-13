@@ -15,7 +15,7 @@
    <children>
       <HBox layoutX="282.0" prefHeight="605.0" prefWidth="727.0">
          <children>
-            <TableView fx:id="dataTableview" onMouseClicked="#doubleClicker" prefHeight="605.0" prefWidth="756.0" style="-fx-background-color: #1f405c;">
+            <TableView fx:id="dataTableview"  prefHeight="605.0" prefWidth="756.0" style="-fx-background-color: #1f405c;">
               <columns>
                 <TableColumn fx:id="websiteCol" prefWidth="162.66665649414062" resizable="false" sortable="false" text="Website" />
                 <TableColumn fx:id="usernameCol" minWidth="4.33331298828125" prefWidth="173.33334350585938" resizable="false" sortable="false" text="Username" />

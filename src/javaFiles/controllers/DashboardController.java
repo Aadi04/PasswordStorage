@@ -1,10 +1,10 @@
 package javaFiles.controllers;
 
 import javaFiles.util.DbConnection;
+import javaFiles.util.EncryptionSystem;
 import javaFiles.util.UserData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -25,15 +25,14 @@ import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable
 {
-
     private String currentUser = LoginFormController.getCurrentUser();
-
-    private DataEditorController dataEditorController;
-
 
     private String tableToOpen = currentUser + "_database";
 
-    private static Stage stage = new Stage();
+    private static Stage dashboardStage = new Stage();
+    private static Stage dataEdtiorStage = new Stage();
+
+    DataEditorController dataEditorController;
 
     static String selectedWebsite = null;
     static String selectedUsername = null;
@@ -63,22 +62,38 @@ public class DashboardController implements Initializable
     @FXML
     private TableColumn<UserData,String> notesCol;
 
-    private ObservableList<UserData> data = FXCollections.observableArrayList();;
+    private static ObservableList<UserData> data = FXCollections.observableArrayList();;
 
     private DbConnection dbConnection;
 
-    public DashboardController()
-    {
-        this.dataEditorController = new DataEditorController(this);
-    }
     public void showDashboardWindow() throws IOException
     {
-        Parent root = FXMLLoader.load(getClass().getResource("/resources/fxml/dashboard.fxml"));
+        //Parent root = FXMLLoader.load(getClass().getResource("/resources/fxml/dashboard.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/dashboard.fxml"));
+        Parent root = loader.load();
 
         Stage stage = getDashboardStage();
         Scene scene = new Scene(root);
 
-        stage.setTitle("Sign-Up Page");
+        stage.setTitle("Dashboard");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void showDataEditorWindow() throws IOException
+    {
+        //Parent root = FXMLLoader.load(getClass().getResource("/resources/fxml/dashboard.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/fxml/dataView.fxml"));
+        Parent root = loader.load();
+
+        DataEditorController dataEditorController = loader.getController();
+        dataEditorController.setDashboardController(this);
+
+        Stage stage = getDataEditorStage();
+        Scene scene = new Scene(root);
+
+        stage.setTitle("Edit Your Information");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -86,8 +101,14 @@ public class DashboardController implements Initializable
 
     public Stage getDashboardStage()
     {
-        return stage;
+        return dashboardStage;
     }
+
+    public Stage getDataEditorStage()
+    {
+        return dataEdtiorStage;
+    }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
@@ -104,15 +125,18 @@ public class DashboardController implements Initializable
         }
     }
 
-    private void loadData() throws SQLException
+    public void loadData() throws SQLException
     {
         Connection connection = DbConnection.connection();
-        //PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM Tester3_database" );
-        ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM " + tableToOpen);
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + tableToOpen);
+        ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next())
         {
-            data.add(new UserData(resultSet.getString("Website"),resultSet.getString("Username"), resultSet.getString("Password"), resultSet.getString("Notes")));
+            data.add(new UserData(EncryptionSystem.basicDecryption(resultSet.getString("Website")),
+                    EncryptionSystem.basicDecryption(resultSet.getString("Username")),
+                    changePasswordFieldToStars(resultSet.getString("Password")),
+                    EncryptionSystem.basicDecryption(resultSet.getString("Notes"))));
         }
 
         this.websiteCol.setCellValueFactory(new PropertyValueFactory<>("Website"));
@@ -122,8 +146,8 @@ public class DashboardController implements Initializable
 
         dataTableview.setItems(data);
 
-
         connection.close();
+        preparedStatement.close();
         resultSet.close();
     }
 
@@ -132,10 +156,10 @@ public class DashboardController implements Initializable
         Connection conn = DbConnection.connection();
         PreparedStatement ps = conn.prepareStatement("INSERT INTO " + tableToOpen + "(Website,Username,Password,Notes) VALUES (?,?,?,?)");
 
-        ps.setString(1,this.website.getText());
-        ps.setString(2,this.username.getText());
-        ps.setString(3,this.password.getText());
-        ps.setString(4,this.notes.getText());
+        ps.setString(1,EncryptionSystem.basicEncryption(this.website.getText()));
+        ps.setString(2,EncryptionSystem.basicEncryption(this.username.getText()));
+        ps.setString(3,EncryptionSystem.basicEncryption(this.password.getText()));
+        ps.setString(4,EncryptionSystem.basicEncryption(this.notes.getText()));
 
         ps.execute();
 
@@ -151,7 +175,7 @@ public class DashboardController implements Initializable
         this.notes.setText("");
     }
 
-    private void clearTableView()
+    public void clearTableView()
     {
         dataTableview.getItems().clear();
     }
@@ -166,31 +190,44 @@ public class DashboardController implements Initializable
 
     private void doubleClickChecker()
     {
-        dataTableview.setOnMousePressed(new EventHandler<MouseEvent>()
+        dataTableview.setOnMousePressed(event ->
         {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.isPrimaryButtonDown() && event.getClickCount() == 2 && dataTableview.getSelectionModel().getSelectedItem() != null)
-                {
-                    setSelectedWebsite(dataTableview.getSelectionModel().getSelectedItem().getWebsite());
-                    setSelectedUsername(dataTableview.getSelectionModel().getSelectedItem().getUsername());
-                    setSelectedPassword(dataTableview.getSelectionModel().getSelectedItem().getPassword());
-                    setSelectedNotes(dataTableview.getSelectionModel().getSelectedItem().getNotes());
+            if (event.isPrimaryButtonDown() && event.getClickCount() == 2 && dataTableview.getSelectionModel().getSelectedItem() != null)
+            {
+                setSelectedWebsite(dataTableview.getSelectionModel().getSelectedItem().getWebsite());
+                setSelectedUsername(dataTableview.getSelectionModel().getSelectedItem().getUsername());
+                setSelectedPassword(dataTableview.getSelectionModel().getSelectedItem().getPassword());
+                setSelectedNotes(dataTableview.getSelectionModel().getSelectedItem().getNotes());
 
-                    try
-                    {
-                        dataEditorController.showDataEditorWindow();
-                        dataTableview.getSelectionModel().clearSelection();
-                    }
-                    catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
+                try
+                {
+                    //DataEditorController.showDataEditorWindow();
+                    showDataEditorWindow();
+                    dataTableview.getSelectionModel().clearSelection();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
                 }
             }
         });
     }
 
+    private String changePasswordFieldToStars(String string)
+    {
+        int length = string.length();
+        String changedPass = "";
+        char star = '*';
+
+        for(int i = 1; i <= length; i++)
+        {
+            changedPass+=star;
+        }
+
+        return changedPass;
+    }
+
+    //Getters and Setters
     public static String getSelectedWebsite()
     {
         return selectedWebsite;
@@ -198,7 +235,7 @@ public class DashboardController implements Initializable
 
     public void setSelectedWebsite(String selectedWebsite)
     {
-        this.selectedWebsite = selectedWebsite;
+        DashboardController.selectedWebsite = selectedWebsite;
     }
 
     public static String getSelectedUsername()

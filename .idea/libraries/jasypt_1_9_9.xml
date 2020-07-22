@@ -1,12 +1,13 @@
 <component name="libraryTable">
-  <library name="jfoenix-9.0.8">
+  <library name="jasypt-1.9.9">
     <CLASSES>
-      <root url="jar://$USER_HOME$/Downloads/jfoenix-9.0.8.jar!/" />
+      <root url="file://$USER_HOME$/Documents/Java Libaraies/jasypt-1.9.3/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file://$USER_HOME$/Documents/Java Libaraies/jasypt-1.9.3/lib" />
     </SOURCES>
+    <jarDirectory url="file://$USER_HOME$/Documents/Java Libaraies/jasypt-1.9.3/lib" recursive="false" />
     <jarDirectory url="file://$USER_HOME$/Documents/Java Libaraies/jasypt-1.9.3/lib" recursive="false" type="SOURCES" />
   </library>
 </component>

@@ -72,7 +72,7 @@ public class LoginFormController {
         byte[] salt = new byte[5];
 
         Connection connection = DbConnection.connection();
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM  loginData WHERE Username = ?");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM loginData WHERE Username = ?");
 
         ps.setString(1, username);
 

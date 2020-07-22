@@ -1,11 +1,15 @@
 package javaFiles.util;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class EncryptionSystem
 {
+
+    private static final String seed = "GOweEAEmWQCFh29";
     private static final char[] hexArray = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
     //Encrypts the passwords
@@ -40,5 +44,21 @@ public class EncryptionSystem
         random.nextBytes(bytes);
 
         return  bytes;
+    }
+
+    public static String basicEncryption(String stringToEncrypt)
+    {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(seed);
+
+        return encryptor.encrypt(stringToEncrypt);
+    }
+
+    public static String basicDecryption(String stringToDecrypt)
+    {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(seed);
+
+        return  encryptor.decrypt(stringToDecrypt);
     }
 }

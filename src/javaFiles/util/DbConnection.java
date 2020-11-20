@@ -4,19 +4,31 @@ import java.sql.*;
 
 public class DbConnection
 {
+    private static Connection connection = null;
     public static Connection connection() throws SQLException
     {
-        try
+        if(connection ==null)
         {
-            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:EmailStorageSystemDatabase.db");
+        }
+        else
+        {
+            connection.close();
+            connection = DriverManager.getConnection("jdbc:sqlite:EmailStorageSystemDatabase.db");
+        }
 
-            return DriverManager.getConnection("jdbc:sqlite:EmailStorageSystemDatabase.db");
-        }
-        catch (SQLException | ClassNotFoundException e)
-        {
-            System.out.println(e);
-            return null;
-        }
+        return connection;
+//        try
+//        {
+//            Class.forName("org.sqlite.JDBC");
+//
+//            return DriverManager.getConnection("jdbc:sqlite:EmailStorageSystemDatabase.db");
+//        }
+//        catch (SQLException | ClassNotFoundException e)
+//        {
+//            System.out.println(e);
+//            return null;
+//        }
     }
 
     public static void updateData(String username, String pass,String salt ) throws SQLException

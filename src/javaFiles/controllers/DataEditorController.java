@@ -26,15 +26,17 @@ public class DataEditorController implements Initializable
    @FXML
     TextArea notesField;
 
-    String selectedWeb = null;
-    String selectedUser = null;
-    String selectedPass = null;
-    String selectedNotes = null;
+    int selectedIndex;
+    String selectedWeb;
+    String selectedUser;
+    String selectedPass;
+    String selectedNotes;
 
     String tableToOpen = LoginFormController.getCurrentUser() + "_database";
 
     public DataEditorController() throws SQLException
     {
+        selectedIndex = DashboardController.getSelectedIndex();
         selectedWeb = DashboardController.getSelectedWebsite();
         selectedUser = DashboardController.getSelectedUsername();
         selectedPass = getPasswordFromDatabase();
@@ -72,10 +74,8 @@ public class DataEditorController implements Initializable
     private void deleteData() throws SQLException
     {
         Connection connection = DbConnection.connection();
-        PreparedStatement ps = connection.prepareStatement("DELETE FROM " + tableToOpen + " WHERE Website = ? AND Username = ? AND Password = ?");
-        ps.setString(1,selectedWeb);
-        ps.setString(2,selectedUser);
-        ps.setString(3,selectedPass);
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM " + tableToOpen + " WHERE Number = ?");
+        ps.setInt(1,selectedIndex);
 
         Alerts.displayWarningAlert("Deleting Data", "You are about to delete these data, and it can not be reversed.");
         ps.execute();
@@ -88,18 +88,15 @@ public class DataEditorController implements Initializable
     {
         Connection connection = DbConnection.connection();
         PreparedStatement ps = connection.prepareStatement("UPDATE " + tableToOpen + " SET Website = ?, Username = ?, Password =?, Notes = ? " +
-                "WHERE Website = ? AND Username = ? AND Password = ? AND Notes = ?");
+                "WHERE Number = ?");
 
         //For SET clause
-        ps.setString(1,websiteField.getText());
-        ps.setString(2,usernameField.getText());
-        ps.setString(3,passwordField.getText());
-        ps.setString(4,notesField.getText());
+        ps.setString(1,EncryptionSystem.basicEncryption(websiteField.getText()));
+        ps.setString(2,EncryptionSystem.basicEncryption(usernameField.getText()));
+        ps.setString(3,EncryptionSystem.basicEncryption(passwordField.getText()));
+        ps.setString(4,EncryptionSystem.basicEncryption(notesField.getText()));
         //For WHERE clause
-        ps.setString(5,selectedWeb);
-        ps.setString(6,selectedUser);
-        ps.setString(7,selectedPass);
-        ps.setString(8,selectedNotes);
+        ps.setInt(5,selectedIndex);
 
         ps.execute();
 
@@ -111,10 +108,8 @@ public class DataEditorController implements Initializable
     {
         String password = "";
         Connection connection = DbConnection.connection();
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM Tester3_database WHERE Website = ? AND Username = ?");
-        ps.setString(1, selectedWeb);
-        ps.setString(2, selectedUser);
-        //ps.setString(3, selectedNotes);
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + tableToOpen + " WHERE Number = ?");
+        ps.setInt(1,selectedIndex);
         ResultSet rs = ps.executeQuery();
 
         while(rs.next())

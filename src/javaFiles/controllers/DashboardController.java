@@ -34,6 +34,7 @@ public class DashboardController implements Initializable
 
     DataEditorController dataEditorController;
 
+    static int selectedIndex = 0;
     static String selectedWebsite = null;
     static String selectedUsername = null;
     static String selectedPassword= null;
@@ -61,6 +62,8 @@ public class DashboardController implements Initializable
     private TableColumn<UserData,String> passwordCol;
     @FXML
     private TableColumn<UserData,String> notesCol;
+    @FXML
+    private TableColumn<UserData, Integer> indexCol;
 
     private static ObservableList<UserData> data = FXCollections.observableArrayList();;
 
@@ -133,12 +136,13 @@ public class DashboardController implements Initializable
 
         while (resultSet.next())
         {
-            data.add(new UserData(EncryptionSystem.basicDecryption(resultSet.getString("Website")),
+            data.add(new UserData(resultSet.getInt("Number"),EncryptionSystem.basicDecryption(resultSet.getString("Website")),
                     EncryptionSystem.basicDecryption(resultSet.getString("Username")),
                     changePasswordFieldToStars(resultSet.getString("Password")),
                     EncryptionSystem.basicDecryption(resultSet.getString("Notes"))));
         }
 
+        this.indexCol.setCellValueFactory(new PropertyValueFactory<>("Index"));
         this.websiteCol.setCellValueFactory(new PropertyValueFactory<>("Website"));
         this.usernameCol.setCellValueFactory(new PropertyValueFactory<>("Username"));
         this.passwordCol.setCellValueFactory(new PropertyValueFactory<>("Password"));
@@ -194,6 +198,7 @@ public class DashboardController implements Initializable
         {
             if (event.isPrimaryButtonDown() && event.getClickCount() == 2 && dataTableview.getSelectionModel().getSelectedItem() != null)
             {
+                setSelectedIndex(dataTableview.getSelectionModel().getSelectedItem().getIndex());
                 setSelectedWebsite(dataTableview.getSelectionModel().getSelectedItem().getWebsite());
                 setSelectedUsername(dataTableview.getSelectionModel().getSelectedItem().getUsername());
                 setSelectedPassword(dataTableview.getSelectionModel().getSelectedItem().getPassword());
@@ -228,6 +233,16 @@ public class DashboardController implements Initializable
     }
 
     //Getters and Setters
+    public static int getSelectedIndex()
+    {
+        return selectedIndex;
+    }
+
+    public static void setSelectedIndex(int selectedIndex)
+    {
+        DashboardController.selectedIndex = selectedIndex;
+    }
+
     public static String getSelectedWebsite()
     {
         return selectedWebsite;

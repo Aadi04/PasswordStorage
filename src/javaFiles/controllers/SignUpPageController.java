@@ -155,7 +155,7 @@ public class SignUpPageController
     private void makeANewTable(String tableName) throws SQLException
     {
         Connection conn = DbConnection.connection();
-        PreparedStatement ps = conn.prepareStatement("CREATE TABLE " + tableName + " (Website TEXT, Username TEXT, Password TEXT,Notes TEXT)");
+        PreparedStatement ps = conn.prepareStatement("CREATE TABLE " + tableName + " (Number INTEGER PRIMARY KEY AUTOINCREMENT, Website TEXT, Username TEXT, Password TEXT, Notes TEXT)");
 
         ps.execute();
 

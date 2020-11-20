@@ -64,6 +64,11 @@ public class LoginFormController {
         {
           return true;
         }
+
+        ps.close();
+        rs.close();
+        con.close();
+
         return false;
     }
 
@@ -104,6 +109,10 @@ public class LoginFormController {
         {
             hash = rs.getString("Password");
         }
+
+        ps.close();
+        rs.close();
+        connection.close();
 
         return hash;
     }
